@@ -5,6 +5,11 @@ module.exports = {
     'webpack-dev-server/client?http://localhost:8080',
     './src/index.js'
   ],
+  module: {
+    loaders: [
+      { test: /\.js$/, loader: 'webpack-traceur?runtime&sourceMaps&experimental' }
+    ]
+  },
   resolve: {
     extensions: ['', '.js']
   },
