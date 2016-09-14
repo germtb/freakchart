@@ -1,10 +1,43 @@
-// import {
-//   sum,
-//   times,
-// } from '../Vector2';
+import {
+  sum,
+  times,
+} from './Vector2';
 
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
+
+canvas.addEventListener('touchmove', function(event) {
+  if (event.targetTouches.length == 1) {
+    var touch = event.targetTouches[0];
+    translation.x += touch.pageX / 200;
+    translation.y -= touch.pageY / 200;
+  }
+}, false);
+
+let mouseDown = false;
+
+canvas.addEventListener('mousedown', function(event){
+  console.log("Mouse DOWN");
+  mouseDown = true;
+}, false);
+
+window.addEventListener('mouseup', function(event){
+  console.log("Mouse up");
+  mouseDown = false;
+}, false);
+
+window.addEventListener('onmouseout', function(event){
+  console.log("Mouse out");
+  mouseDown = false;
+}, false);
+
+window.addEventListener('mousemove',function(event){
+  if (!mouseDown) {
+    return;
+  }
+  translation.x += event.movementX / scale.x;
+  // translation.y -= event.movementY / scale.y;
+}, false);
 
 const data = [];
 
@@ -30,11 +63,20 @@ function drawYAxis() {
 }
 
 function drawXAxisTics() {
-  console.log("Draw x axis tics");
+  // console.log("Draw x axis tics");
 }
 
 function drawYAxisTics() {
-  console.log("Draw y axis tics");
+  // console.log("Draw y axis tics");
+}
+
+function worldToScreen(point) {
+  const scaledCoordinates = times(point, scale);
+  const screenCoordinates = sum(scaledCoordinates, translation);
+  const leftPadding = paddingLeft + xAxisHeight / 2;
+  const topPadding = canvasHeight - paddingTop;
+  const paddedCoordinates = sum({x: screenCoordinates.x, y: -screenCoordinates.y}, {x: leftPadding, y: topPadding});
+  return paddedCoordinates;
 }
 
 function drawPoint(position, radius) {
@@ -44,21 +86,17 @@ function drawPoint(position, radius) {
   ctx.stroke();
 }
 
-// function worldToScreen(point) {
-//   return sum(sum(times(point, scale), translation), {x: paddingLeft, y: paddingTop});
-// }
-
 function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawXAxis();
   drawYAxis();
   drawXAxisTics();
   drawYAxisTics();
+  for (let i = 0; i < 50; i++) {
+    drawPoint({x: 10 * i, y: 20 * (i % 6)}, 5);
+  }
 }
 
-draw();
-// drawPoint({x: 0, y: 0}, 10);
-// drawPoint({x: 10, y: 0}, 10);
-// drawPoint({x: 20, y: 0}, 10);
-// drawPoint({x: 30, y: 0}, 10);
-// drawPoint({x: 40, y: 0}, 10);
-// drawPoint({x: 50, y: 0}, 10);
+setInterval(() => {
+  draw();
+}, 15);
