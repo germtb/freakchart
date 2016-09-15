@@ -4,7 +4,7 @@ import {
 } from './Vector2';
 
 var canvas = document.getElementById("myCanvas");
-var ctx = canvas.getContext("2d");
+var context = canvas.getContext("2d");
 
 canvas.addEventListener('touchmove', function(event) {
   if (event.targetTouches.length == 1) {
@@ -13,6 +13,28 @@ canvas.addEventListener('touchmove', function(event) {
     translation.y -= touch.pageY / 200;
   }
 }, false);
+
+window.addEventListener('keydown', function (event) {
+  var key = event.which || event.keyCode;
+  if (key === 187) {
+    scale = {
+      x: scale.x * 1.1,
+      y: scale.y * 1.1
+    };
+  }
+  if (key === 189) {
+    scale = {
+      x: scale.x / 1.1,
+      y: scale.y / 1.1
+    };
+  }
+  if (key === 39) {
+    translation.x += 10 / scale.x;
+  }
+  if (key === 37) {
+    translation.x -= 10 / scale.x;
+  }
+});
 
 let mouseDown = false;
 
@@ -54,12 +76,12 @@ const paddingTop = 10;
 function drawXAxis() {
   const xAxisTop = canvasHeight - paddingTop;
   const xAxisWidth = canvasWidth - 2 * paddingLeft;
-  ctx.fillRect(paddingLeft, xAxisTop, xAxisWidth, xAxisHeight);
+  context.fillRect(paddingLeft, xAxisTop, xAxisWidth, xAxisHeight);
 }
 
 function drawYAxis() {
   const yAxisHeight = canvasHeight - 2 * paddingTop;
-  ctx.fillRect(paddingLeft, paddingTop, yAxisWidth, yAxisHeight);
+  context.fillRect(paddingLeft, paddingTop, yAxisWidth, yAxisHeight);
 }
 
 function drawXAxisTics() {
@@ -75,19 +97,20 @@ function worldToScreen(point) {
   const screenCoordinates = sum(scaledCoordinates, translation);
   const leftPadding = paddingLeft + xAxisHeight / 2;
   const topPadding = canvasHeight - paddingTop;
-  const paddedCoordinates = sum({x: screenCoordinates.x, y: -screenCoordinates.y}, {x: leftPadding, y: topPadding});
+  const padding = {x: leftPadding, y: topPadding};
+  const paddedCoordinates = sum({x: screenCoordinates.x, y: - screenCoordinates.y}, padding);
   return paddedCoordinates;
 }
 
 function drawPoint(position, radius) {
   const screenCoordinates = worldToScreen(position);
-  ctx.beginPath();
-  ctx.arc(screenCoordinates.x, screenCoordinates.y, radius, 0, 2 * Math.PI);
-  ctx.stroke();
+  context.beginPath();
+  context.arc(screenCoordinates.x, screenCoordinates.y, radius, 0, 2 * Math.PI);
+  context.stroke();
 }
 
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  context.clearRect(0, 0, canvas.width, canvas.height);
   drawXAxis();
   drawYAxis();
   drawXAxisTics();
